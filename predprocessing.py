@@ -52,6 +52,21 @@ def datetime_handler(cell: str) -> float | None:
     return cell
 
 
+def education_handler(cell: str) -> str | None:
+    cell = cell.lower()
+
+    if 'неоконч' in cell or 'студ' in cell or 'общее' in cell:
+        return 'общее'
+
+    if 'высш' in cell:
+        return 'высшее'
+
+    if 'средн' in cell or 'проф' in cell:
+        return 'среднее'
+
+    return None
+
+
 def predprocessing(
              path_participants: str,
              path_metrics: str,
@@ -74,6 +89,9 @@ def predprocessing(
         for date_column_name in date_column_names:
             new_values = [datetime_handler(n) for n in df_participants[date_column_name].tolist()]
             df_participants[date_column_name] = pd.DataFrame(new_values, columns=[date_column_name])
+
+    new_values = [education_handler(n) for n in df_participants['Образование'].tolist()]
+    df_participants['Образование'] = pd.DataFrame(new_values, columns=['Образование'])
 
     filenames_metrics = os.listdir(path_metrics)
     filenames_metrics.sort()
